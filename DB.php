@@ -4,9 +4,9 @@ class DB {
 
     public function __construct() {
         $db_host = "localhost";
-        $db_name = "ejemplo";  // Cambia por tu base de datos
-        $db_user = "prueba";   // Cambia por tu usuario
-        $db_pass = "Estoesunaprueba123#";  // Cambia por tu contraseña
+        $db_name = "ejemplo";  
+        $db_user = "prueba";   
+        $db_pass = "Estoesunaprueba123#";  
 
         try {
             $this->connection = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);

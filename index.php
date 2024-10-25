@@ -8,15 +8,12 @@
 <body>
     <!-- Campo de entrada para la nueva tarea -->
     <label for="content">Nueva tarea:</label>
-    <input type="text" id="content" placeholder="Ingresa una tarea"><br><br>
-    <!-- Botón para guardar la tarea -->
-    <button id="guardar">Guardar</button>
+    <input type="text" id="content" placeholder="Ingresa una tarea">
+    <button id="guardar">Guardar</button><br><br>
 
     <h2>Tareas</h2>
     <ul id="tareas">
-        <!-- Aquí se mostrarán las tareas -->
         <?php
-        // Mostrar las tareas que ya están en la base de datos al cargar la página
         require "DB.php";
         require "todo.php";
 
@@ -24,7 +21,8 @@
             $db = new DB;
             $todo_list = Todo::DB_selectAll($db->connection);
             foreach ($todo_list as $row) {
-                echo "<li>" . $row->getItem_id() . ". " . $row->getContent() . "</li>";
+                echo "<li>" . $row->getItem_id() . ". " . $row->getContent() . 
+                " <button onclick='eliminarTarea(" . $row->getItem_id() . ")'>Eliminar</button></li>";
             }
         } catch (PDOException $e) {
             echo "Error!: " . $e->getMessage() . "<br/>";
@@ -34,44 +32,54 @@
     </ul>
 
     <script>
-        // Función para manejar el envío del formulario y la inserción de nuevas tareas
+        // Función para guardar una nueva tarea
         document.getElementById('guardar').addEventListener('click', function () {
             const content = document.getElementById('content').value;
-
             if (!content) {
                 alert('Por favor, introduce una tarea.');
                 return;
             }
 
-            const url = 'http://lamp.local/controller.php';  
+            const url = 'http://lamp.local/controller.php';
             const postData = { content: content };
 
-            // Hacer la solicitud POST al servidor
             fetch(url, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(postData)
             })
-            .then(response => response.json())  // Convertir la respuesta en JSON
-            .then(data => {
-                const lista = document.getElementById('tareas');
-                lista.innerHTML = '';  // Limpiar la lista antes de agregar los nuevos datos
-
-                // Iterar sobre el array de tareas devuelto por el servidor
-                data.forEach(item => {
-                    const li = document.createElement("li");
-                    li.appendChild(document.createTextNode(item.item_id + ". " + item.content));
-                    lista.appendChild(li);  // Añadir cada tarea a la lista
-                });
-
-                // Limpiar el campo de texto después de insertar
-                document.getElementById('content').value = '';
-            })
-            .catch(error => console.error('Error en la solicitud POST:', error));  // Manejo de errores
+            .then(response => response.json())
+            .then(data => actualizarLista(data))
+            .catch(error => console.error('Error en la solicitud POST:', error));
         });
-    </script>
 
+        // Función para actualizar la lista de tareas en el HTML
+        function actualizarLista(data) {
+            const lista = document.getElementById('tareas');
+            lista.innerHTML = '';
+            data.forEach(item => {
+                const li = document.createElement("li");
+                li.innerHTML = item.item_id + ". " + item.content + 
+                " <button onclick='eliminarTarea(" + item.item_id + ")'>Eliminar</button>";
+                lista.appendChild(li);
+            });
+            document.getElementById('content').value = '';
+        }
+
+        // Función para eliminar una tarea usando fetch
+        function eliminarTarea(item_id) {
+            const url = 'http://lamp.local/controller.php';
+            const postData = { item_id: item_id };
+
+            fetch(url, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(postData)
+            })
+            .then(response => response.json())
+            .then(data => actualizarLista(data))
+            .catch(error => console.error('Error en la solicitud DELETE:', error));
+        }
+    </script>
 </body>
 </html>
