@@ -20,4 +20,5 @@ class DB {
     public function __destruct() {
         $this->connection = null;
     }
+
 }
