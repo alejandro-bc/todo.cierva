@@ -1,5 +1,4 @@
 <?php
-
 class Todo implements \JsonSerializable {
     private int $item_id;
     private string $content;
@@ -15,6 +14,7 @@ class Todo implements \JsonSerializable {
         }
     }
 
+    // Métodos getter para acceder a item_id y content
     public function getItem_id() {
         return $this->item_id;
     }
@@ -42,6 +42,13 @@ class Todo implements \JsonSerializable {
         }
 
         return $todo_list;
+    }
+
+    public static function updateContentById($dbconn, $item_id, $content) {
+        $stmt = $dbconn->prepare("UPDATE todo_list SET content = :content WHERE item_id = :item_id");
+        $stmt->bindParam(':content', $content);
+        $stmt->bindParam(':item_id', $item_id, PDO::PARAM_INT);
+        $stmt->execute();
     }
 
     public static function deleteById($dbconn, $item_id) {

@@ -12,7 +12,7 @@
     
     <div class="command-container">
         <form method="post">
-            <input type="text" name="command" id="command" placeholder="Ingresa un comando" required>
+            <input type="text" name="command" id="command" placeholder="Pon un comando" required>
             <button type="submit">Ejecutar</button>
         </form>
     </div>

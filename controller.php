@@ -13,11 +13,25 @@ $bodyRequest = file_get_contents("php://input");
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
         $db = new DB();
-        $new_todo = new Todo;
-        $new_todo->jsonConstruct($bodyRequest);
-        $new_todo->insert($db->connection);
-        $todo_list = Todo::DB_selectAll($db->connection);
-        return_response(200, "OK", $todo_list);
+        $data = json_decode($bodyRequest, true);
+
+        if (isset($data['action']) && $data['action'] === 'update') {
+            // Si el POST es para actualizar
+            if (isset($data['item_id']) && isset($data['content'])) {
+                Todo::updateContentById($db->connection, $data['item_id'], $data['content']);
+                $todo_list = Todo::DB_selectAll($db->connection);
+                return_response(200, "OK", $todo_list);
+            } else {
+                return_response(400, "Bad Request", ["error" => "item_id or content missing"]);
+            }
+        } else {
+            // Si el POST es para crear una nueva tarea
+            $new_todo = new Todo;
+            $new_todo->jsonConstruct($bodyRequest);
+            $new_todo->insert($db->connection);
+            $todo_list = Todo::DB_selectAll($db->connection);
+            return_response(200, "OK", $todo_list);
+        }
         break;
 
     case 'DELETE':

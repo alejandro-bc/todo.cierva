@@ -4,9 +4,9 @@ class DB {
 
     public function __construct() {
         $db_host = "localhost";
-        $db_name = "ejemplo";  
-        $db_user = "prueba";   
-        $db_pass = "Estoesunaprueba123#";  
+        $db_name = "ejemplo";    // Nombre de la base de datos
+        $db_user = "prueba";     // Usuario
+        $db_pass = "Estoesunaprueba123#"; // Contraseña
 
         try {
             $this->connection = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
@@ -20,5 +20,5 @@ class DB {
     public function __destruct() {
         $this->connection = null;
     }
-
 }
+?>
